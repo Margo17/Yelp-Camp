@@ -15,12 +15,13 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
+const MongoStore = require('connect-mongo');
+const dbUrl = 'mongodb://localhost:27017/yelp-camp';
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp');
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
@@ -43,7 +44,20 @@ app.use(
 	})
 );
 
+const store = MongoStore.create({
+	mongoUrl: dbUrl,
+	touchAfter: 24 * 60 * 60, // Update session once per 24h
+	crypto: {
+		secret: 'thisisaplaceholdersecret',
+	},
+});
+
+store.on('error', function (e) {
+	console.log('SESSION STORE ERROR', e);
+});
+
 const sessionConfig = {
+	store: store,
 	name: 'sesco',
 	secret: 'thisisaplaceholdersecret',
 	resave: false,

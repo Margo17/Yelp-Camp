@@ -19,7 +19,7 @@ const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const MongoStore = require('connect-mongo');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = 'mongodb://localhost:27017/yelp-camp';
 
 mongoose.connect(dbUrl);
 
@@ -44,7 +44,7 @@ app.use(
 	})
 );
 
-const secret = process.env.SECRET || 'thisisaplaceholdersecret';
+const secret = 'thisisaplaceholdersecret';
 const store = MongoStore.create({
 	mongoUrl: dbUrl,
 	touchAfter: 24 * 60 * 60, // Update session once per 24h
@@ -158,7 +158,7 @@ app.use((err, req, res, next) => {
 	res.status(statusCode).render('error', { err });
 });
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 app.listen(port, () => {
 	console.log(`Serving on port ${port}`);
 });

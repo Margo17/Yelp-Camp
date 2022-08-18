@@ -19,7 +19,7 @@ const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const MongoStore = require('connect-mongo');
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 mongoose.connect(dbUrl);
 
@@ -44,12 +44,12 @@ app.use(
 	})
 );
 
-const secret = 'thisisaplaceholdersecret';
+const secret = process.env.SECRET || 'thisisaplaceholdersecret';
 const store = MongoStore.create({
 	mongoUrl: dbUrl,
 	touchAfter: 24 * 60 * 60, // Update session once per 24h
 	crypto: {
-		secret: secret,
+		secret,
 	},
 });
 
@@ -58,9 +58,9 @@ store.on('error', function (e) {
 });
 
 const sessionConfig = {
-	store: store,
+	store,
 	name: 'sesco',
-	secret: secret,
+	secret,
 	resave: false,
 	saveUninitialized: true,
 	cookie: {
